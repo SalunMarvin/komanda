@@ -1,0 +1,53 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div>
+	<div class='row'>
+		<div class='col-sm-12 center-text'>
+			<h3>Comandas ativas</h3>
+		</div>
+	</div>
+	{% if tickets.all %}
+	<div class='row'>
+		<div class='col-sm-12'>
+			<ul class="list-group">
+				{% for ticket in tickets %}
+				<li key={card.number} class="list-group-item">
+					<div class='row'>
+						<div class='col-sm-9'>
+							<a href="/ticket/{{ticket.slug}}">
+							<span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+							<span class="card-name">{% if ticket.number %} 
+								{{ ticket.name}} - {{ ticket.number}}
+								{% else %}
+								{{ ticket.name }}
+								{% endif %} </span>
+								</a>
+						</div>
+						<div class='col-sm-3 right-text'>
+							<span class="card-value">
+								{% if ticket.finalPrice %} 
+								R${{ticket.finalPrice}}
+								 {% else %} 
+								N/D {% endif %}</span>
+						</div>
+					</div>
+				</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+	{% else %}
+	<div class='row'>
+		<div class='col-sm-12 center-text no-results' style='margin-bottom: 20px'>
+			Ainda não há comandas ativas
+		</div>
+	</div>
+	{% endif %}
+	<div class='row'>
+		<div class='col-sm-12 center-text'>
+			<a href="/add">
+				<button type="button" class="btn btn-success center-button">Adicionar comanda</button>
+			</a>
+		</div>
+	</div>
+</div>
+{% endblock content %}

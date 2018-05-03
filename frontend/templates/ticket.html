@@ -1,0 +1,298 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+
+<script src="{% static 'vendor/jquery/dist/jquery.min.js' %}"></script>
+
+<script>
+  let timeout
+  let price
+  let link
+  let product
+  let newPrice
+
+  function searchProducts(product) {
+    $.ajax({
+      'url': '/api/products/' + product + '/',
+      'type': 'GET',
+      'dataType': 'json',
+      'success': function (data) {
+        $("#product_list").hide()
+        for (i in data) {
+          if (!data[i]['price'] || data[i]['price'] == 0) {
+            price = 'Sem preço'
+            link = ''
+          } else {
+            price = 'R$' + data[i]['price']
+            link = 'href=/ticket/{{ticket.slug}}/product/' + data[i]['id']
+          }
+          $('ul#product_list').append(
+            "<li class='list-group-item'>" +
+            "<div class='row'>" +
+            "<div class='col-sm-9'>" +
+            "<span class='card-name'>" +
+            data[i]['name'] +
+            "</span>" +
+            "</div>" +
+            "<div class='col-sm-3 right-text'>" +
+            "<span class='card-value'>" +
+            price +
+            "</span>" +
+            "<a " + link + " class='glyphicon glyphicon-plus card-add noPrice" + data[i]['id'] + "' value='Adicionar' aria-hidden='true'/>" +
+            "</div>" +
+            "</div>" +
+            "</li>")
+
+          if (!data[i]['price'] || data[i]['price'] == 0) {
+            product = data[i]['id']
+            $('.noPrice' + data[i]['id']).on('click', function () {
+              $('#modal2').modal('show')
+
+              $('.no-price').append(
+                "<a id='" + product + "'href='/ticket/{{ticket.slug}}/product/" + data[i]['id'] + "/price/" + newPrice + "' >" +
+                "<button type='button' class='btn btn-success'>Confirmar</button></a>"
+              )
+            })
+          }
+        }
+        $("#product_list").show()
+      }
+    })
+  }
+
+  function changePrice() {
+    newPrice = $('#newPrice').val()
+    console.log(newPrice)
+    let element = $('#' + product)
+    $(element).attr('href', '/ticket/{{ticket.slug}}/product/' + product + '/price/' + newPrice)
+    console.log($(element).attr('href'))
+  }
+
+  function changeDiscountPrice() {
+    let discountValue = $('.discountValue').val()
+    console.log($('.discountValue').val())
+    console.log(discountValue)
+    let element = $('.discount')
+    $(element).attr('href', '/ticket/{{ticket.slug}}/discount/' + discountValue)
+    console.log($(element).attr('href'))
+  }
+
+  function filter(element) {
+    clearTimeout(timeout)
+    $("#product_list").children("li").remove()
+    let value = $(element).val()
+
+    value = value.toUpperCase()
+
+    if (value == '') {
+      $("#product_list").hide()
+    } else {
+      timeout = setTimeout(function () { searchProducts(value) }, 500)
+    }
+  }
+
+</script>
+
+<div>
+  <div class='row'>
+    <div class='col-sm-12 center-text'>
+      <h3>Comanda: {{ticket.name}} {% if ticket.number %} - {{ ticket.number }} {% endif %}
+      </h3>
+    </div>
+  </div>
+  <div class='row'>
+    <div class='col-sm-12'>
+      <div class='panel panel-default'>
+        <div class='panel-body'>
+          <form action="/add/" method="post">
+            <div>
+              <label for="ticket_name" class='control-label'>Pesquisar produto</label>
+              <input type="text" class="form-control" id='search' placeholder="Digite o nome ou marca do produto" onkeyup="filter(this)"
+              />
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class='row'>
+    <div class='col-sm-12'>
+      <ul class="list-group" id='product_list'>
+
+      </ul>
+    </div>
+  </div>
+  <div class='row'>
+    <div class='col-sm-12 center-text'>
+      <h3>Produtos</h3>
+    </div>
+  </div>
+  <div class='row'>
+    <div class='col-sm-12'>
+      <ul class="list-group">
+        {% if ticket.products.all %} {% for quantity in ticket.quantity_set.all %}
+        <li class="list-group-item">
+          <div class="row visible-xs">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div class="col-md-9 col-sm-9 col-xs-9">
+                <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
+                <span class="card-name">
+								{{ quantity.product.name }} ({{ quantity }})
+							 </span>
+              </div>
+              <div class="col-md-3 col-sm-3 col-xs-3" style="text-align: right;">
+                <span class="card-value">
+								{% if quantity.product.price %} 
+								R${{ quantity.product.price }}
+								 {% else %} 
+								N/D {% endif %}</span>
+              </div>
+            </div>
+            <div class="col-md-12 col-sm-12 col-xs-12" style="padding-top:15px">
+              <div class="col-md-4 col-sm-4 col-xs-4" style="text-align: center;">
+                <a class="glyphicon glyphicon-plus card-sucess" href="/ticket/{{ ticket.slug }}/product/{{ quantity.product.id }}" aria-hidden="true"></a>
+              </div>
+              <div class="col-md-4 col-sm-4 col-xs-4" style="text-align: center;">
+                {% if quantity.product.price %}
+                <a class="glyphicon glyphicon-usd card-sucess" href="/ticket/{{ ticket.slug }}/product/{{ quantity.product.id }}/pay" aria-hidden="true"></a>                {% endif %}
+              </div>
+              <div class="col-md-4 col-sm-4 col-xs-4" style="text-align: center;">
+                <a class="glyphicon glyphicon-trash card-delete" href="/ticket/{{ ticket.slug }}/product/{{ quantity.product.id }}/delete"
+                  aria-hidden="true"></a>
+              </div>
+            </div>
+          </div>
+          <div class='row hidden-xs'>
+            <div class='col-sm-9'>
+              <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
+              <span class="card-name">
+								{{ quantity.product.name }} ({{ quantity }})
+							 </span>
+            </div>
+            <div class='col-sm-3 right-text'>
+              <span class="card-value">
+                <a class="glyphicon glyphicon-plus card-sucess" href="/ticket/{{ ticket.slug }}/product/{{ quantity.product.id }}" aria-hidden="true"></a>  
+								{% if quantity.product.price %} 
+								R${{ quantity.product.price }}
+								 {% else %} 
+								N/D {% endif %}</span> {% if quantity.product.price %}
+              <a class="glyphicon glyphicon-usd card-sucess" href="/ticket/{{ ticket.slug }}/product/{{ quantity.product.id }}/pay" aria-hidden="true"></a>              {% endif %}
+              <a class="glyphicon glyphicon-trash card-delete" href="/ticket/{{ ticket.slug }}/product/{{ quantity.product.id }}/delete"
+                aria-hidden="true"></a>
+            </div>
+          </div>
+        </li>
+        {% endfor %} {% else %}
+        <div class='row'>
+          <div class='col-sm-12 center-text no-results'>
+            Ainda não há produtos nesta comanda
+          </div>
+        </div>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+  <div class='row'>
+    <div class='col-sm-6 no-results'>
+      <button id="closeTicket" type="button" class="btn btn-warning center-button">Finalizar comanda</button>
+      <button id="discountValue" type="button" class="btn btn-success center-button">Descontar valor</button>
+    </div>
+    <div class='col-sm-6 right-text no-results'>
+      {% if ticket.finalPrice %}
+      <div class='col-sm-12 right-text no-results'>
+        Total: R${{ ticket.finalPrice }}
+      </div>
+      {% endif %} {% if ticket.partialPaid %}
+      <div class='col-sm-12 right-text no-results'>
+        Valor pago: R${{ ticket.partialPaid }}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="modal" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Atenção</h4>
+      </div>
+      <div class="modal-body">
+        Ainda há R${{ leftToPay }} restantes nesta comanda. Tem certeza que deseja finalizá-la?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+        <a href="/ticket/{{ticket.slug}}/close/"><button type="button" class="btn btn-success">Sim</button></a>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<div class="modal fade" id="modal2" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Atenção</h4>
+      </div>
+      <div class="modal-body">
+        Este produto não tem preço. Adicione um preço:
+
+        <div class="input-group">
+          <span class="input-group-addon">R$</span>
+          <input type="text" id="newPrice" class="form-control format-mask" onkeyup="changePrice()" />
+        </div>
+      </div>
+      <div class="modal-footer no-price">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<div class="modal fade" id="modal3" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Atenção</h4>
+      </div>
+      <div class="modal-body">
+        Informe o valor a ser descontado desta comanda:
+
+        <div class="input-group">
+          <span class="input-group-addon">R$</span>
+          <input type="text" class="form-control discountValue format-mask" onkeyup="changeDiscountPrice()" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+        <a href="#" class="discount"><button type='button' class='btn btn-success'>Confirmar</button></a>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<script>
+  $('#closeTicket').on('click', function () {
+    $('#modal').modal('show')
+  })
+
+  $('#discountValue').on('click', function () {
+    $('#modal3').modal('show')
+  })
+
+  $(document).ready(function () {
+    $('.format-mask').mask("#,##0.00", { reverse: true });
+  });
+
+</script>
+
+{% endblock content %}

@@ -1,0 +1,21 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div>
+	<div class='row'>
+		<div class='col-sm-12 center-text'>
+			<h3>Alguma coisa não deu certo!</h3>
+		</div>
+	</div>
+	<div class='row'>
+		<div class='col-sm-12 center-text no-results'>
+			Esta comanda já está aberta!
+		</div>
+	</div>
+	<div class='row'>
+		<div class='col-sm-12 center-text'>
+			<a href="/add">
+				<button type="button" class="btn btn-success center-button">Adicionar comanda</button>
+			</a>
+		</div>
+	</div>
+</div>
+{% endblock content %}

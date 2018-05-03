@@ -1,0 +1,52 @@
+.logo {
+    width: 300px;
+}
+
+.card-name {
+  font-size: 20px;
+  padding-left: 10px;
+}
+
+.card-value {
+  font-size: 16px;
+  color: #333333;
+  padding-left: 5px;
+}
+
+.card-delete {
+  font-size: 16px;
+  color: #D82724;
+  padding-left: 10px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.card-add {
+  font-size: 16px;
+  color: #00CCFF;
+  padding-left: 10px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.card-success {
+  font-size: 16px;
+  color: #66FF66;
+  padding-left: 10px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+
+.center-text {
+    text-align: center;
+}
+
+.right-text {
+    text-align: right;
+}
+
+.no-results {
+  color: #333333;
+  font-size: 16px;
+}

@@ -1,0 +1,62 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div>
+  <div class='row'>
+    <div class='col-sm-12 center-text'>
+      <h3>Adicionar comanda</h3>
+    </div>
+  </div>
+  <div class='row'>
+    <div class='col-sm-12'>
+      <div class='panel panel-default'>
+        <div class='panel-body'>
+          <form action="/add/" method="post">
+            {% csrf_token %}
+            <div>
+              <label for="ticket_name" class='control-label'>Nome</label> {{ form.ticket_name }}
+            </div>
+            <div style="margin-top: 10px">
+              <label for="ticket_name" class='control-label'>Mesa</label> {{ form.ticket_number }}
+            </div>
+            <input type='submit' class='btn btn-primary' value="Criar comanda" style="margin-top: 10px" />
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class='row'>
+    <div class='col-sm-12 center-text'>
+      <h3>Comandas ativas</h3>
+    </div>
+  </div>
+  <div class='row'>
+    <div class='col-sm-12'>
+      <ul class="list-group">
+        {% for ticket in tickets %}
+        <li key={card.slug} class="list-group-item">
+          <div class='row'>
+            <div class='col-sm-9'>
+              <a href="/ticket/{{ ticket.slug }}">
+                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                <span class="card-name">{% if ticket.number %} 
+								{{ ticket.name}} - {{ ticket.number }}
+								{% else %}
+								{{ ticket.name }}
+								{% endif %} </span>
+              </a>
+            </div>
+            <div class='col-sm-3 right-text'>
+              <span class="card-value">
+								{% if ticket.finalPrice %} 
+								R${{ticket.finalPrice}}
+								 {% else %} 
+								N/D {% endif %}</span>
+              <a class="glyphicon glyphicon-trash card-delete" aria-hidden="true"></a>
+            </div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock content %}

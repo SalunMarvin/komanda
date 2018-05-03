@@ -1,0 +1,64 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+
+<div>
+  <div class='row'>
+    <div class='col-sm-12 center-text'>
+      <h3>Comanda número: {{ticket.name}} {% if ticket.number %} - {{ ticket.number }} {% endif %}
+      </h3>
+    </div>
+  </div>
+  <div class='row'>
+    <div class='col-sm-12 center-text'>
+      <h3>Produtos</h3>
+    </div>
+  </div>
+  <div class='row'>
+    <div class='col-sm-12'>
+      <ul class="list-group">
+        {% if ticket.products.all %} {% for quantity in ticket.quantity_set.all %}
+        <li class="list-group-item">
+          <div class='row'>
+            <div class='col-sm-9'>
+              <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
+              <span class="card-name">
+								{{ quantity.product.name }} ({{ quantity }})
+							 </span>
+            </div>
+            <div class='col-sm-3 right-text'>
+              <span class="card-value">
+								{% if quantity.product.price %} 
+								R${{ quantity.product.price }}
+								 {% else %} 
+								N/D {% endif %}</span>
+              <a class="glyphicon glyphicon-trash card-delete" href="/ticket/{{ ticket.slug }}/product/{{ quantity.product.id }}/delete" aria-hidden="true"></a>
+              <a class="glyphicon glyphicon-usd card-sucess" href="/ticket/{{ ticket.slug }}/product/{{ quantity.product.id }}/pay" aria-hidden="true"></a>
+            </div>
+          </div>
+        </li>
+        {% endfor %} {% else %}
+        <div class='row'>
+          <div class='col-sm-12 center-text no-results'>
+            Ainda não há produtos nesta comanda
+          </div>
+        </div>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+  <div class='row'>
+    <div class='col-sm-6 right-text no-results'>
+      {% if ticket.finalPrice %}
+      <div class='col-sm-12 right-text no-results'>
+        Total: R${{ ticket.finalPrice }}
+      </div>
+      {% endif %} {% if ticket.partialPaid %}
+      <div class='col-sm-12 right-text no-results'>
+        Valor pago: R${{ ticket.partialPaid }}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+
+{% endblock content %}

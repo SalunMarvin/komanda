@@ -1,0 +1,43 @@
+<!DOCTYPE html> {% load static %}
+<html lang="pt-BR">
+
+<head>
+  <title>Komanda Kanova</title>
+  <meta name="viewport" content="width=device-width, user-scalable=no">
+  <!-- Bootstrap -->
+
+  <link rel="stylesheet" media="all" href="{% static 'vendor/bootstrap/dist/css/bootstrap.min.css' %}">
+
+  <link href='https://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" media="all" href="{% static 'vendor/fontawesome/css/font-awesome.min.css' %}">
+  <link rel="stylesheet" media="all" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+  <div class="container">
+    <div class='row'>
+      <div class='col-sm-12 center-text'>
+        <a href='/'><img src="{% static 'img/LogoKomanda.png' %}" alt="Komanda by Kanova" class="logo" /></a>
+      </div>
+    </div>
+    <!-- #################### -->
+    <!-- DJANGO BLOCK CONTENT -->
+    <!-- #################### -->
+    <div class="content-top-margin">
+      {% block content %} {% endblock %}
+    </div>
+  </div>
+  <!-- ######################## -->
+  <!-- END DJANGO BLOCK CONTENT -->
+  <!-- ######################## -->
+
+
+  <script src="{% static 'vendor/jquery/dist/jquery.min.js' %}"></script>
+  <script src="{% static 'vendor/jquery-ui/jquery-ui.min.js' %}"></script>
+  <script src="{% static 'vendor/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'vendor/jquery-mask/jquery.mask.min.js' %}"></script>
+
+</body>
+
+</html>
